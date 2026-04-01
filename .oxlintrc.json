@@ -1,0 +1,35 @@
+{
+  "rules": {
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-unused-vars": "error",
+    "no-unused-private-class-members": "error",
+    "no-duplicate-imports": "error",
+
+    "no-constant-binary-expression": "error",
+    "no-constructor-return": "error",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-unreachable-loop": "error",
+
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-eval": "error",
+    "no-caller": "error",
+    "no-new-wrappers": "error",
+    "no-void": "error",
+    "no-array-constructor": "error",
+    "eqeqeq": "error",
+    "no-throw-literal": "error",
+    "no-useless-concat": "error",
+    "no-useless-rename": "error",
+    "no-useless-computed-key": "error",
+
+    "typescript/no-explicit-any": "error",
+    "typescript/no-non-null-assertion": "warn",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-import-type-side-effects": "error"
+  },
+  "ignorePatterns": ["node_modules", "dist"]
+}
