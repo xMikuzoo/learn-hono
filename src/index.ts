@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server'
+import type { Context } from 'hono'
 import { Hono } from 'hono'
 
 import type { Note, NotePayload } from './types/index.js'
@@ -17,6 +18,15 @@ const notes: Note[] = [
 ]
 
 const app = new Hono()
+
+const noteNotFound = (c: Context) => {
+  return c.json(
+    {
+      message: 'Note not found',
+    },
+    404,
+  )
+}
 
 app
   .get('/api/notes', (c) => {
@@ -49,22 +59,30 @@ app
     )
   })
 
-app.get('/api/notes/:id', (c) => {
-  const id = Number(c.req.param('id'))
-  const result = notes.find((x) => x.id === id)
-  return result
-    ? c.json({
-        data: {
-          note: result,
-        },
-      })
-    : c.json(
-        {
-          error: 'Note not found',
-        },
-        404,
-      )
-})
+app
+  .get('/api/notes/:id', (c) => {
+    const id = Number(c.req.param('id'))
+    const result = notes.find((x) => x.id === id)
+    return result
+      ? c.json({
+          data: {
+            note: result,
+          },
+        })
+      : noteNotFound(c)
+  })
+  .put(async (c) => {
+    const { content: newContent, title: newTitle } = await c.req.json<NotePayload>()
+    const id = Number(c.req.param('id'))
+    const index = notes.findIndex((x) => x.id === id)
+
+    if (index === -1) {
+      return noteNotFound(c)
+    }
+
+    notes[index] = { id, title: newTitle, content: newContent }
+    return c.json({ data: { note: notes[index] } }, 200)
+  })
 
 app.notFound((c) => {
   return c.json(
