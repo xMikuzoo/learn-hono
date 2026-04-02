@@ -1,17 +1,10 @@
-GET http://localhost:3000/ HTTP/1.1
-
-###
-
-GET http://localhost:3000/about HTTP/1.1
-
-###
-
-GET http://localhost:3000/api/status HTTP/1.1
-
-###
-
-POST http://localhost:3000/api/echo HTTP/1.1
-
-###
 
 GET http://localhost:3000/nieistniejaca-sciezka HTTP/1.1
+
+###
+
+GET http://localhost:3000/api/notes HTTP/1.1
+
+###
+
+GET http://localhost:3000/api/notes?search=first&note HTTP/1.1

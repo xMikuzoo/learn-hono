@@ -1,26 +1,33 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 
+import type { Note } from './types/index.js'
+
+const notes: Note[] = [
+  {
+    id: 1,
+    content: 'this is content of my first note',
+    title: 'first note',
+  },
+  {
+    id: 2,
+    content: 'this is content of my second note',
+    title: 'second note',
+  },
+]
+
 const app = new Hono()
 
-app.get('/', (c) => {
-  return c.text('Witaj w moim api!')
-})
-
-app.get('/about', (c) => {
-  return c.html('<h1>O Api</h1><p>To moje pierwsze api w hono</p>')
-})
-
-app.get('/api/status', (c) => {
+app.get('/api/notes', (c) => {
+  const search = c.req.query('search')
+  const result =
+    search === undefined
+      ? notes
+      : notes.filter((x) => x.title.toLowerCase().includes(search.toLowerCase()))
   return c.json({
-    status: 'ok',
-    timeStamp: new Date(),
-  })
-})
-
-app.post('/api/echo', (c) => {
-  return c.json({
-    message: 'Echo endpoint gotowy',
+    data: {
+      notes: result,
+    },
   })
 })
 
