@@ -17,6 +17,8 @@ const notes: Note[] = [
   },
 ]
 
+let nextId = 3
+
 const app = new Hono()
 
 const noteNotFound = (c: Context) => {
@@ -44,7 +46,7 @@ app
   .post(async (c) => {
     const { title, content } = await c.req.json<NotePayload>()
     const newNote: Note = {
-      id: notes.length + 1,
+      id: nextId++,
       title,
       content,
     }
