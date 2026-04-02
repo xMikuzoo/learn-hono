@@ -83,6 +83,20 @@ app
     notes[index] = { id, title: newTitle, content: newContent }
     return c.json({ data: { note: notes[index] } }, 200)
   })
+  .delete((c) => {
+    const id = Number(c.req.param('id'))
+    const index = notes.findIndex((x) => x.id === id)
+    if (index === -1) {
+      return noteNotFound(c)
+    }
+    notes.splice(index, 1)
+    return c.json(
+      {
+        message: 'deleted',
+      },
+      200,
+    )
+  })
 
 app.notFound((c) => {
   return c.json(

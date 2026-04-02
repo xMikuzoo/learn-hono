@@ -36,3 +36,7 @@ Content-Type: application/json
   "title": "Zaktualizowany tytuł",
   "content": "Zaktualizowana treść"
 }
+
+###
+
+DELETE http://localhost:3000/api/notes/2 HTTP/1.1
