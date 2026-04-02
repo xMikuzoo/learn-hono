@@ -31,6 +31,23 @@ app.get('/api/notes', (c) => {
   })
 })
 
+app.get('/api/notes/:id', (c) => {
+  const id = Number(c.req.param('id'))
+  const result = notes.find((x) => x.id === id)
+  return result
+    ? c.json({
+        data: {
+          note: result,
+        },
+      })
+    : c.json(
+        {
+          error: 'Note not found',
+        },
+        404,
+      )
+})
+
 app.notFound((c) => {
   return c.json(
     {

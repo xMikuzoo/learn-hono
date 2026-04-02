@@ -8,3 +8,11 @@ GET http://localhost:3000/api/notes HTTP/1.1
 ###
 
 GET http://localhost:3000/api/notes?search=first&note HTTP/1.1
+
+###
+
+GET http://localhost:3000/api/notes/2 HTTP/1.1
+
+###
+
+GET http://localhost:3000/api/notes/5 HTTP/1.1
