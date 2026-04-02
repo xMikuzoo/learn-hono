@@ -3,3 +3,8 @@ export interface Note {
   title: string
   content: string
 }
+
+export interface NotePayload {
+  title: string
+  content: string
+}

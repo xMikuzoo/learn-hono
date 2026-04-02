@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 
-import type { Note } from './types/index.js'
+import type { Note, NotePayload } from './types/index.js'
 
 const notes: Note[] = [
   {
@@ -18,18 +18,36 @@ const notes: Note[] = [
 
 const app = new Hono()
 
-app.get('/api/notes', (c) => {
-  const search = c.req.query('search')
-  const result =
-    search === undefined
-      ? notes
-      : notes.filter((x) => x.title.toLowerCase().includes(search.toLowerCase()))
-  return c.json({
-    data: {
-      notes: result,
-    },
+app
+  .get('/api/notes', (c) => {
+    const search = c.req.query('search')
+    const result =
+      search === undefined
+        ? notes
+        : notes.filter((x) => x.title.toLowerCase().includes(search.toLowerCase()))
+    return c.json({
+      data: {
+        notes: result,
+      },
+    })
   })
-})
+  .post(async (c) => {
+    const { title, content } = await c.req.json<NotePayload>()
+    const newNote: Note = {
+      id: notes.length + 1,
+      title,
+      content,
+    }
+    notes.push(newNote)
+    return c.json(
+      {
+        data: {
+          note: newNote,
+        },
+      },
+      201,
+    )
+  })
 
 app.get('/api/notes/:id', (c) => {
   const id = Number(c.req.param('id'))
