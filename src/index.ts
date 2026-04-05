@@ -8,18 +8,32 @@ import { responseTime } from '@/middleware/responseTime.js'
 import notesApp from '@/routes/notes.js'
 
 const app = new Hono()
-
-app.use(logger())
-app.use(cors())
-app.use(requestId)
-app.use(responseTime)
+  .use(logger())
+  .use(cors())
+  .use(requestId)
+  .use(responseTime)
 
 app.route('/api/notes', notesApp)
 
-app.notFound((c) => {
-  return c.json({ message: 'Nie znaleziono' }, 404)
+app.get('/test', (c) => {
+  return c.json({
+    message: 'This is a test endpoint',
+    requestId: c.get('requestId'),
+  })
 })
 
-serve({ fetch: app.fetch, port: 3000 }, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
+app.notFound((c) => {
+  return c.json(
+    { message: 'Nie znaleziono' },
+    404,
+  )
 })
+
+serve(
+  { fetch: app.fetch, port: 3000 },
+  (info) => {
+    console.log(
+      `Server is running on http://localhost:${info.port}`,
+    )
+  },
+)
