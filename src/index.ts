@@ -3,10 +3,12 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 
-import { apiKeyAuth } from '@/middleware/apiKeyAuth.js'
-import { requestId } from '@/middleware/requestId.js'
-import { responseTime } from '@/middleware/responseTime.js'
-import notesApp from '@/routes/notes.js'
+import {
+  apiKeyAuth,
+  requestId,
+  responseTime,
+} from '@/middleware'
+import notesApp from '@/routes/notes'
 
 const app = new Hono()
   .use(logger())

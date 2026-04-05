@@ -1,9 +1,6 @@
 import { Hono } from 'hono'
 
-import type {
-  Note,
-  NotePayload,
-} from '@/types/index.js'
+import type { Note, NotePayload } from '@/types'
 
 const notes: Note[] = [
   {
