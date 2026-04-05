@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 
+import { apiKeyAuth } from '@/middleware/apiKeyAuth.js'
 import { requestId } from '@/middleware/requestId.js'
 import { responseTime } from '@/middleware/responseTime.js'
 import notesApp from '@/routes/notes.js'
@@ -12,12 +13,20 @@ const app = new Hono()
   .use(cors())
   .use(requestId)
   .use(responseTime)
+  .use('/api/*', apiKeyAuth)
 
 app.route('/api/notes', notesApp)
 
 app.get('/test', (c) => {
   return c.json({
     message: 'This is a test endpoint',
+    requestId: c.get('requestId'),
+  })
+})
+app.get('/api/test-auth', (c) => {
+  return c.json({
+    message:
+      'You shoulnd get this message if u are not authorized',
     requestId: c.get('requestId'),
   })
 })
