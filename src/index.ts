@@ -1,120 +1,25 @@
 import { serve } from '@hono/node-server'
-import type { Context } from 'hono'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { logger } from 'hono/logger'
 
-import type { Note, NotePayload } from './types/index.js'
-
-const notes: Note[] = [
-  {
-    id: 1,
-    content: 'this is content of my first note',
-    title: 'first note',
-  },
-  {
-    id: 2,
-    content: 'this is content of my second note',
-    title: 'second note',
-  },
-]
-
-let nextId = 3
+import { requestId } from '@/middleware/requestId.js'
+import { responseTime } from '@/middleware/responseTime.js'
+import notesApp from '@/routes/notes.js'
 
 const app = new Hono()
 
-const noteNotFound = (c: Context) => {
-  return c.json(
-    {
-      message: 'Note not found',
-    },
-    404,
-  )
-}
+app.use(logger())
+app.use(cors())
+app.use(requestId)
+app.use(responseTime)
 
-app
-  .get('/api/notes', (c) => {
-    const search = c.req.query('search')
-    const result =
-      search === undefined
-        ? notes
-        : notes.filter((x) => x.title.toLowerCase().includes(search.toLowerCase()))
-    return c.json({
-      data: {
-        notes: result,
-      },
-    })
-  })
-  .post(async (c) => {
-    const { title, content } = await c.req.json<NotePayload>()
-    const newNote: Note = {
-      id: nextId++,
-      title,
-      content,
-    }
-    notes.push(newNote)
-    return c.json(
-      {
-        data: {
-          note: newNote,
-        },
-      },
-      201,
-    )
-  })
-
-app
-  .get('/api/notes/:id', (c) => {
-    const id = Number(c.req.param('id'))
-    const result = notes.find((x) => x.id === id)
-    return result
-      ? c.json({
-          data: {
-            note: result,
-          },
-        })
-      : noteNotFound(c)
-  })
-  .put(async (c) => {
-    const { content: newContent, title: newTitle } = await c.req.json<NotePayload>()
-    const id = Number(c.req.param('id'))
-    const index = notes.findIndex((x) => x.id === id)
-
-    if (index === -1) {
-      return noteNotFound(c)
-    }
-
-    notes[index] = { id, title: newTitle, content: newContent }
-    return c.json({ data: { note: notes[index] } }, 200)
-  })
-  .delete((c) => {
-    const id = Number(c.req.param('id'))
-    const index = notes.findIndex((x) => x.id === id)
-    if (index === -1) {
-      return noteNotFound(c)
-    }
-    notes.splice(index, 1)
-    return c.json(
-      {
-        message: 'deleted',
-      },
-      200,
-    )
-  })
+app.route('/api/notes', notesApp)
 
 app.notFound((c) => {
-  return c.json(
-    {
-      message: 'Nie znaleziono',
-    },
-    404,
-  )
+  return c.json({ message: 'Nie znaleziono' }, 404)
 })
 
-serve(
-  {
-    fetch: app.fetch,
-    port: 3000,
-  },
-  (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`)
-  },
-)
+serve({ fetch: app.fetch, port: 3000 }, (info) => {
+  console.log(`Server is running on http://localhost:${info.port}`)
+})
