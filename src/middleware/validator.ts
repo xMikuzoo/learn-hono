@@ -1,6 +1,11 @@
-import type { Context } from 'hono'
+import { zValidator } from '@hono/zod-validator'
+import type {
+  Context,
+  ValidationTargets,
+} from 'hono'
+import type { ZodType } from 'zod'
 
-export const validationHook = (
+const validationHook = (
   result: {
     success: boolean
     error?: {
@@ -29,3 +34,11 @@ export const validationHook = (
     )
   }
 }
+
+export const validator = <
+  Target extends keyof ValidationTargets,
+  Schema extends ZodType,
+>(
+  target: Target,
+  schema: Schema,
+) => zValidator(target, schema, validationHook)

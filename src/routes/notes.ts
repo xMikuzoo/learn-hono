@@ -1,11 +1,10 @@
-import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 
+import { validator } from '@/middleware'
 import {
   noteIdParamSchema,
   notePayloadSchema,
   notesQuerySchema,
-  validationHook,
 } from '@/schemas'
 import type { Note } from '@/types'
 
@@ -36,11 +35,7 @@ const notesApp = new Hono()
 notesApp
   .get(
     '/',
-    zValidator(
-      'query',
-      notesQuerySchema,
-      validationHook,
-    ),
+    validator('query', notesQuerySchema),
     (c) => {
       const { search, limit } =
         c.req.valid('query')
@@ -58,11 +53,7 @@ notesApp
     },
   )
   .post(
-    zValidator(
-      'json',
-      notePayloadSchema,
-      validationHook,
-    ),
+    validator('json', notePayloadSchema),
     async (c) => {
       const { title, content } =
         await c.req.valid('json')
@@ -82,11 +73,7 @@ notesApp
 notesApp
   .get(
     '/:id',
-    zValidator(
-      'param',
-      noteIdParamSchema,
-      validationHook,
-    ),
+    validator('param', noteIdParamSchema),
     (c) => {
       const id = Number(c.req.valid('param').id)
       const result = notes.find(
@@ -98,16 +85,8 @@ notesApp
     },
   )
   .put(
-    zValidator(
-      'param',
-      noteIdParamSchema,
-      validationHook,
-    ),
-    zValidator(
-      'json',
-      notePayloadSchema,
-      validationHook,
-    ),
+    validator('param', noteIdParamSchema),
+    validator('json', notePayloadSchema),
     async (c) => {
       const id = Number(c.req.valid('param').id)
       const { title, content } =
@@ -125,11 +104,7 @@ notesApp
     },
   )
   .delete(
-    zValidator(
-      'param',
-      noteIdParamSchema,
-      validationHook,
-    ),
+    validator('param', noteIdParamSchema),
     (c) => {
       const id = Number(c.req.valid('param').id)
       const index = notes.findIndex(

@@ -3,4 +3,3 @@ export {
   notePayloadSchema,
   notesQuerySchema,
 } from './notes'
-export { validationHook } from './validationHook'
