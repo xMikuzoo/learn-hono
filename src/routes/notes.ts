@@ -1,6 +1,12 @@
+import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 
-import type { Note, NotePayload } from '@/types'
+import {
+  noteIdParamSchema,
+  notePayloadSchema,
+  notesQuerySchema,
+} from '@/schemas'
+import type { Note } from '@/types'
 
 const notes: Note[] = [
   {
@@ -27,69 +33,87 @@ const noteNotFound = (c: any) => {
 const notesApp = new Hono()
 
 notesApp
-  .get('/', (c) => {
-    const search = c.req.query('search')
-    const result =
-      search === undefined
-        ? notes
-        : notes.filter((x) =>
+  .get(
+    '/',
+    zValidator('query', notesQuerySchema),
+    (c) => {
+      const { search, limit } =
+        c.req.valid('query')
+      let result = search
+        ? notes.filter((x) =>
             x.title
               .toLowerCase()
               .includes(search.toLowerCase()),
           )
-    return c.json({ data: { notes: result } })
-  })
-  .post(async (c) => {
-    const { title, content } =
-      await c.req.json<NotePayload>()
-    const newNote: Note = {
-      id: nextId++,
-      title,
-      content,
-    }
-    notes.push(newNote)
-    return c.json(
-      { data: { note: newNote } },
-      201,
-    )
-  })
+        : notes
+
+      result = result.slice(0, limit)
+
+      return c.json({ data: { notes: result } })
+    },
+  )
+  .post(
+    zValidator('json', notePayloadSchema),
+    async (c) => {
+      const { title, content } =
+        await c.req.valid('json')
+      const newNote: Note = {
+        id: nextId++,
+        title,
+        content,
+      }
+      notes.push(newNote)
+      return c.json(
+        { data: { note: newNote } },
+        201,
+      )
+    },
+  )
 
 notesApp
-  .get('/:id', (c) => {
-    const id = Number(c.req.param('id'))
-    const result = notes.find((x) => x.id === id)
-    return result
-      ? c.json({ data: { note: result } })
-      : noteNotFound(c)
-  })
-  .put(async (c) => {
-    const {
-      content: newContent,
-      title: newTitle,
-    } = await c.req.json<NotePayload>()
-    const id = Number(c.req.param('id'))
-    const index = notes.findIndex(
-      (x) => x.id === id,
-    )
-    if (index === -1) return noteNotFound(c)
-    notes[index] = {
-      id,
-      title: newTitle,
-      content: newContent,
-    }
-    return c.json(
-      { data: { note: notes[index] } },
-      200,
-    )
-  })
-  .delete((c) => {
-    const id = Number(c.req.param('id'))
-    const index = notes.findIndex(
-      (x) => x.id === id,
-    )
-    if (index === -1) return noteNotFound(c)
-    notes.splice(index, 1)
-    return c.json({ message: 'deleted' }, 200)
-  })
+  .get(
+    '/:id',
+    zValidator('param', noteIdParamSchema),
+    (c) => {
+      const id = Number(c.req.valid('param').id)
+      const result = notes.find(
+        (x) => x.id === id,
+      )
+      return result
+        ? c.json({ data: { note: result } })
+        : noteNotFound(c)
+    },
+  )
+  .put(
+    zValidator('param', noteIdParamSchema),
+    zValidator('json', notePayloadSchema),
+    async (c) => {
+      const id = Number(c.req.valid('param').id)
+      const { title, content } =
+        c.req.valid('json')
+      const index = notes.findIndex(
+        (x) => x.id === id,
+      )
+      if (index === -1) {
+        return noteNotFound(c)
+      }
+      notes[index] = { id, title, content }
+      return c.json({
+        data: { note: notes[index] },
+      })
+    },
+  )
+  .delete(
+    zValidator('param', noteIdParamSchema),
+    (c) => {
+      const id = Number(c.req.valid('param').id)
+      const index = notes.findIndex(
+        (x) => x.id === id,
+      )
+      if (index === -1) return noteNotFound(c)
+      notes.splice(index, 1)
+      return c.json({ message: 'deleted' }, 200)
+    },
+  )
 
 export default notesApp

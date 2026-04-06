@@ -4,7 +4,6 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 
 import {
-  apiKeyAuth,
   requestId,
   responseTime,
 } from '@/middleware'
@@ -15,7 +14,7 @@ const app = new Hono()
   .use(cors())
   .use(requestId)
   .use(responseTime)
-  .use('/api/*', apiKeyAuth)
+// .use('/api/*', apiKeyAuth)
 
 app.route('/api/notes', notesApp)
 
