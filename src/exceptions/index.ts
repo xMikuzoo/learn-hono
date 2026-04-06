@@ -1,0 +1,1 @@
+export { NoteNotFoundException } from './notes'

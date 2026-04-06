@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 
+import { NoteNotFoundException } from '@/exceptions'
 import { validator } from '@/middleware'
 import {
   noteIdParamSchema,
@@ -22,13 +23,6 @@ const notes: Note[] = [
 ]
 
 let nextId = 3
-
-const noteNotFound = (c: any) => {
-  return c.json(
-    { message: 'Note not found' },
-    404,
-  )
-}
 
 const notesApp = new Hono()
 
@@ -79,9 +73,10 @@ notesApp
       const result = notes.find(
         (x) => x.id === id,
       )
-      return result
-        ? c.json({ data: { note: result } })
-        : noteNotFound(c)
+      if (!result) {
+        throw new NoteNotFoundException()
+      }
+      return c.json({ data: { note: result } })
     },
   )
   .put(
@@ -95,7 +90,7 @@ notesApp
         (x) => x.id === id,
       )
       if (index === -1) {
-        return noteNotFound(c)
+        throw new NoteNotFoundException()
       }
       notes[index] = { id, title, content }
       return c.json({
@@ -110,7 +105,9 @@ notesApp
       const index = notes.findIndex(
         (x) => x.id === id,
       )
-      if (index === -1) return noteNotFound(c)
+      if (index === -1) {
+        throw new NoteNotFoundException()
+      }
       notes.splice(index, 1)
       return c.json({ message: 'deleted' }, 200)
     },
