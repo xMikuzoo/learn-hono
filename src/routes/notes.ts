@@ -5,6 +5,7 @@ import {
   noteIdParamSchema,
   notePayloadSchema,
   notesQuerySchema,
+  validationHook,
 } from '@/schemas'
 import type { Note } from '@/types'
 
@@ -35,7 +36,11 @@ const notesApp = new Hono()
 notesApp
   .get(
     '/',
-    zValidator('query', notesQuerySchema),
+    zValidator(
+      'query',
+      notesQuerySchema,
+      validationHook,
+    ),
     (c) => {
       const { search, limit } =
         c.req.valid('query')
@@ -53,7 +58,11 @@ notesApp
     },
   )
   .post(
-    zValidator('json', notePayloadSchema),
+    zValidator(
+      'json',
+      notePayloadSchema,
+      validationHook,
+    ),
     async (c) => {
       const { title, content } =
         await c.req.valid('json')
@@ -73,7 +82,11 @@ notesApp
 notesApp
   .get(
     '/:id',
-    zValidator('param', noteIdParamSchema),
+    zValidator(
+      'param',
+      noteIdParamSchema,
+      validationHook,
+    ),
     (c) => {
       const id = Number(c.req.valid('param').id)
       const result = notes.find(
@@ -85,8 +98,16 @@ notesApp
     },
   )
   .put(
-    zValidator('param', noteIdParamSchema),
-    zValidator('json', notePayloadSchema),
+    zValidator(
+      'param',
+      noteIdParamSchema,
+      validationHook,
+    ),
+    zValidator(
+      'json',
+      notePayloadSchema,
+      validationHook,
+    ),
     async (c) => {
       const id = Number(c.req.valid('param').id)
       const { title, content } =
@@ -104,7 +125,11 @@ notesApp
     },
   )
   .delete(
-    zValidator('param', noteIdParamSchema),
+    zValidator(
+      'param',
+      noteIdParamSchema,
+      validationHook,
+    ),
     (c) => {
       const id = Number(c.req.valid('param').id)
       const index = notes.findIndex(

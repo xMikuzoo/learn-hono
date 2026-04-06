@@ -11,11 +11,21 @@ GET http://localhost:3000/api/notes?search=first&note HTTP/1.1
 
 ###
 
+# ❌ GET /api/notes - niepoprawny limit (0 < min 1)
+GET http://localhost:3000/api/notes?limit=0 HTTP/1.1
+
+###
+
 GET http://localhost:3000/api/notes/2 HTTP/1.1
 
 ###
 
 GET http://localhost:3000/api/notes/5 HTTP/1.1
+
+###
+
+# ❌ GET /api/notes/:id - id nie jest liczbą
+GET http://localhost:3000/api/notes/abc HTTP/1.1
 
 ###
 
@@ -44,6 +54,16 @@ Content-Type: application/json
 {
   "title": "Zaktualizowany tytuł",
   "content": "Zaktualizowana treść"
+}
+
+###
+
+# ❌ PUT /api/notes/:id - title za krótki (min 3), brak content
+PUT http://localhost:3000/api/notes/2 HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Ab"
 }
 
 ###
