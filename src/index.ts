@@ -8,34 +8,15 @@ import {
   requestId,
   responseTime,
 } from '@/middleware'
-import notesApp from '@/routes/notes'
+import api from '@/routes'
 
 const app = new Hono()
   .use(logger())
   .use(cors())
   .use(requestId)
   .use(responseTime)
-// .use('/api/*', apiKeyAuth)
 
-app.route('/api/notes', notesApp)
-
-app.get('/test', (c) => {
-  return c.json({
-    message: 'This is a test endpoint',
-    requestId: c.get('requestId'),
-  })
-})
-app.get('/api/test-auth', (c) => {
-  return c.json({
-    message:
-      'You shoulnd get this message if u are not authorized',
-    requestId: c.get('requestId'),
-  })
-})
-
-app.get('/api/debug/error', () => {
-  throw new Error('Simulated server crash')
-})
+app.route('/api', api)
 
 app.notFound((c) => {
   return c.json(
