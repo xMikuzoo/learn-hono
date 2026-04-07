@@ -3,9 +3,9 @@ import { Hono } from 'hono'
 import { NoteNotFoundException } from '@/exceptions'
 import { validator } from '@/middleware'
 import {
-  noteIdParamSchema,
+  idParamSchema,
   notePayloadSchema,
-  notesQuerySchema,
+  querySchema,
 } from '@/schemas'
 import type { Note } from '@/types'
 
@@ -29,7 +29,7 @@ const notesApp = new Hono()
 notesApp
   .get(
     '/',
-    validator('query', notesQuerySchema),
+    validator('query', querySchema),
     (c) => {
       const { search, limit } =
         c.req.valid('query')
@@ -67,7 +67,7 @@ notesApp
 notesApp
   .get(
     '/:id',
-    validator('param', noteIdParamSchema),
+    validator('param', idParamSchema),
     (c) => {
       const id = Number(c.req.valid('param').id)
       const result = notes.find(
@@ -80,7 +80,7 @@ notesApp
     },
   )
   .put(
-    validator('param', noteIdParamSchema),
+    validator('param', idParamSchema),
     validator('json', notePayloadSchema),
     async (c) => {
       const id = Number(c.req.valid('param').id)
@@ -99,7 +99,7 @@ notesApp
     },
   )
   .delete(
-    validator('param', noteIdParamSchema),
+    validator('param', idParamSchema),
     (c) => {
       const id = Number(c.req.valid('param').id)
       const index = notes.findIndex(

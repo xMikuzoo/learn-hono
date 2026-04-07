@@ -1,13 +1,6 @@
-import type z from 'zod'
+export type { Note, NotePayload } from './notes'
+export type { User, UserPayload } from './users'
 
-import { notePayloadSchema } from '@/schemas'
-
-export interface Note {
+export interface Entity {
   id: number
-  title: string
-  content: string
 }
-
-export type NotePayload = z.infer<
-  typeof notePayloadSchema
->
