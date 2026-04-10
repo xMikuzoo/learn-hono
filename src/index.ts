@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { logger } from 'hono/logger'
 
+import { env } from '@/env'
 import {
   requestId,
   responseTime,
@@ -55,7 +56,7 @@ app.onError((err, c) => {
 })
 
 serve(
-  { fetch: app.fetch, port: 3000 },
+  { fetch: app.fetch, port: env.PORT },
   (info) => {
     console.log(
       `Server is running on http://localhost:${info.port}`,
