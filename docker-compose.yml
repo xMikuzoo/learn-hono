@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: hono-postgres
+    environment:
+      POSTGRES_USER: hono
+      POSTGRES_PASSWORD: hono123
+      POSTGRES_DB: hono_notes
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

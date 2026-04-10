@@ -8,16 +8,22 @@
     "lint": "oxlint src",
     "lint:fix": "oxlint src --fix",
     "format": "oxfmt src",
-    "format:check": "oxfmt src --check"
+    "format:check": "oxfmt src --check",
+    "db:generate": "drizzle-kit generate --name",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.12",
     "@hono/zod-validator": "^0.7.6",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.12.9",
+    "postgres": "^3.4.9",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "drizzle-kit": "^0.31.10",
     "oxfmt": "^0.43.0",
     "oxlint": "^1.58.0",
     "tsx": "^4.7.1",
