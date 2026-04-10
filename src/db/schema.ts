@@ -6,12 +6,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 
-export const notes = pgTable('notes', {
+const ENTITY_COLUMNS = {
   id: integer()
     .primaryKey()
     .generatedAlwaysAsIdentity(),
-  title: varchar({ length: 100 }).notNull(),
-  content: text().notNull(),
   createdAt: timestamp('created_at')
     .defaultNow()
     .notNull(),
@@ -19,4 +17,10 @@ export const notes = pgTable('notes', {
     .defaultNow()
     .notNull()
     .$onUpdateFn(() => new Date()),
+} as const
+
+export const notes = pgTable('notes', {
+  ...ENTITY_COLUMNS,
+  title: varchar({ length: 100 }).notNull(),
+  content: text().notNull(),
 })
