@@ -7,7 +7,7 @@ GET http://localhost:3000/api/notes HTTP/1.1
 
 ###
 
-GET http://localhost:3000/api/notes?search=first&note HTTP/1.1
+GET http://localhost:3000/api/notes?search=moja&notatka HTTP/1.1
 
 ###
 
@@ -37,8 +37,8 @@ POST http://localhost:3000/api/notes HTTP/1.1
 Content-Type: application/json
 
 {
-  "title": "Moja notatka",
-  "content": "Treść"
+  "title": "Moja notatka2",
+  "content": "Treść2"
 }
 
 ###
