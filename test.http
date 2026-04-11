@@ -128,3 +128,67 @@ Content-Type: application/json
 
 {
 }
+
+###
+
+# ✅ POST /auth/login - poprawne logowanie
+POST http://localhost:3000/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "supersecret123"
+}
+
+###
+
+# ❌ POST /auth/login - złe hasło (istniejący user)
+POST http://localhost:3000/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "wrongpassword"
+}
+
+###
+
+# ❌ POST /auth/login - nieistniejący email
+POST http://localhost:3000/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "ghost@example.com",
+  "password": "supersecret123"
+}
+
+###
+
+# ❌ POST /auth/login - nieprawidłowy format email (walidacja zod)
+POST http://localhost:3000/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "supersecret123"
+}
+
+###
+
+# ❌ POST /auth/login - hasło za krótkie (walidacja zod, min 8)
+POST http://localhost:3000/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "short"
+}
+
+###
+
+# ❌ POST /auth/login - brak pól
+POST http://localhost:3000/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+}
