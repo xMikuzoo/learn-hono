@@ -7,6 +7,16 @@ GET http://localhost:3000/api/notes HTTP/1.1
 
 ###
 
+GET http://localhost:3000/api/notes HTTP/1.1
+Authorization: Bearer invalidtoken
+
+###
+
+GET http://localhost:3000/api/notes HTTP/1.1
+Authorization: Bearer my-secret-key
+
+###
+
 GET http://localhost:3000/api/notes?search=moja&notatka HTTP/1.1
 
 ###
