@@ -1,5 +1,6 @@
-import { eq, ilike } from 'drizzle-orm'
+import { and, eq, ilike } from 'drizzle-orm'
 import { Hono } from 'hono'
+import type { JwtVariables } from 'hono/jwt'
 
 import { db } from '@/db'
 import { notes } from '@/db/schema'
@@ -11,7 +12,9 @@ import {
   querySchema,
 } from '@/schemas'
 
-const notesApp = new Hono()
+const notesApp = new Hono<{
+  Variables: JwtVariables
+}>()
 
 notesApp
   .get(
@@ -20,14 +23,18 @@ notesApp
     async (c) => {
       const { search, limit } =
         c.req.valid('query')
+      const userId = c.get('jwtPayload').sub
 
       const result = await db
         .select()
         .from(notes)
         .where(
-          search
-            ? ilike(notes.title, `%${search}%`)
-            : undefined,
+          and(
+            eq(notes.userId, userId),
+            search
+              ? ilike(notes.title, `%${search}%`)
+              : undefined,
+          ),
         )
         .limit(limit)
 
@@ -39,10 +46,11 @@ notesApp
     async (c) => {
       const { title, content } =
         await c.req.valid('json')
+      const userId = c.get('jwtPayload').sub
 
       const [newNote] = await db
         .insert(notes)
-        .values({ title, content })
+        .values({ title, content, userId })
         .returning()
 
       return c.json(
@@ -58,11 +66,17 @@ notesApp
     validator('param', idParamSchema),
     async (c) => {
       const id = Number(c.req.valid('param').id)
+      const userId = c.get('jwtPayload').sub
 
       const [result] = await db
         .select()
         .from(notes)
-        .where(eq(notes.id, id))
+        .where(
+          and(
+            eq(notes.id, id),
+            eq(notes.userId, userId),
+          ),
+        )
 
       if (!result) {
         throw new NoteNotFoundException()
@@ -77,11 +91,17 @@ notesApp
       const id = Number(c.req.valid('param').id)
       const { title, content } =
         c.req.valid('json')
+      const userId = c.get('jwtPayload').sub
 
       const [updated] = await db
         .update(notes)
         .set({ title, content })
-        .where(eq(notes.id, id))
+        .where(
+          and(
+            eq(notes.id, id),
+            eq(notes.userId, userId),
+          ),
+        )
         .returning()
 
       if (!updated) {
@@ -94,10 +114,16 @@ notesApp
     validator('param', idParamSchema),
     async (c) => {
       const id = Number(c.req.valid('param').id)
+      const userId = c.get('jwtPayload').sub
 
       const [deleted] = await db
         .delete(notes)
-        .where(eq(notes.id, id))
+        .where(
+          and(
+            eq(notes.id, id),
+            eq(notes.userId, userId),
+          ),
+        )
         .returning()
       if (!deleted) {
         throw new NoteNotFoundException()

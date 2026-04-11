@@ -31,4 +31,7 @@ export const notes = pgTable('notes', {
   ...ENTITY_COLUMNS,
   title: varchar({ length: 100 }).notNull(),
   content: text().notNull(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
 })
