@@ -2,7 +2,6 @@ import z from 'zod'
 
 export { authSchema } from './auth'
 export { notePayloadSchema } from './notes'
-export { userPayloadSchema } from './users'
 
 export const idParamSchema = z.object({
   id: z

@@ -4,7 +4,6 @@ import { jwt, type JwtVariables } from 'hono/jwt'
 import { env } from '@/env'
 
 import notesApp from './notes'
-import usersApp from './users'
 
 const api = new Hono<{
   Variables: JwtVariables
@@ -18,6 +17,11 @@ api.use(
 )
 
 api.route('/notes', notesApp)
-api.route('/users', usersApp)
+
+api.get('/me', (c) =>
+  c.json({
+    data: { userId: c.get('jwtPayload').sub },
+  }),
+)
 
 export default api
