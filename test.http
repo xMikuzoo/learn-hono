@@ -86,3 +86,45 @@ X-API-Key: my-secret-key-123
 ###
 
 GET http://localhost:3000/api/debug/error HTTP/1.1
+
+###
+
+# ✅ POST /auth/register - poprawna rejestracja
+POST http://localhost:3000/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "supersecret123"
+}
+
+###
+
+# ❌ POST /auth/register - nieprawidłowy email
+POST http://localhost:3000/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "supersecret123"
+}
+
+###
+
+# ❌ POST /auth/register - hasło za krótkie (min 8)
+POST http://localhost:3000/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user2@example.com",
+  "password": "short"
+}
+
+###
+
+# ❌ POST /auth/register - brak pól
+POST http://localhost:3000/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+}

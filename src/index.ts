@@ -11,12 +11,15 @@ import {
 } from '@/middleware'
 import api from '@/routes'
 
+import authApp from './routes/auth'
+
 const app = new Hono()
   .use(logger())
   .use(cors())
   .use(requestId)
   .use(responseTime)
 
+app.route('/auth', authApp)
 app.route('/api', api)
 
 app.notFound((c) => {
